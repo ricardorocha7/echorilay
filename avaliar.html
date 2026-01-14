@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECHO - Feedback</title>
+
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        /* ==================== RESET GERAL ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #fff;
+            color: #222;
+            overflow: hidden;
+        }
+
+        /* ==================== SIDEBAR ==================== */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 82px;
+            height: 100vh;
+            background-color: #ffffff;
+            border-radius: 0 18px 18px 0;
+            z-index: 1000;
+            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+        }
+
+        #sidebar.open-sidebar {
+            width: 15%;
+            min-width: 200px;
+        }
+
+        #sidebar_content {
+            padding: 12px;
+        }
+
+        #user {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        #user_avatar {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 20px;
+        }
+
+        #user_infos {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #user_infos span:last-child {
+            color: #6b6b6b;
+            font-size: 12px;
+        }
+
+        #side_items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .side-item {
+            border-radius: 8px;
+            padding: 14px;
+            cursor: pointer;
+        }
+
+        .side-item.active {
+            background-color: #010101;
+        }
+
+        .side-item:hover:not(.active),
+        #logout_btn:hover {
+            background-color: #e3e9f7;
+        }
+
+        .side-item a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0a0a0a;
+        }
+
+        .side-item.active a {
+            color: #e3e9f7;
+        }
+
+        .side-item a i {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-description {
+            width: 0;
+            opacity: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            font-size: 14px;
+            transition: all 0.4s ease;
+        }
+
+        #sidebar.open-sidebar .item-description {
+            width: 150px;
+            opacity: 1;
+        }
+
+        #sidebar.open-sidebar .side-item a {
+            justify-content: flex-start;
+            gap: 14px;
+        }
+
+        #logout {
+            border-top: 1px solid #e3e9f7;
+            padding: 12px;
+        }
+
+        #logout_btn {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 12px;
+            font-size: 14px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+
+        #open_btn {
+            position: absolute;
+            top: 30px;
+            right: -10px;
+            background-color: #363636;
+            color: #e3e9f7;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        #open_btn_icon {
+            transition: transform 0.3s ease;
+        }
+
+        #sidebar.open-sidebar #open_btn_icon {
+            transform: rotate(180deg);
+        }
+
+        /* ==================== CONTEÚDO PRINCIPAL ==================== */
+        #content {
+            margin-left: 82px;
+            width: calc(100% - 82px);
+            min-height: 100vh;
+            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sidebar.open-sidebar ~ #content {
+            margin-left: 15%;
+            width: calc(100% - 15%);
+        }
+
+        /* ==================== TELA DE FEEDBACK ==================== */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border: none;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            background: #ffffff; /* 🔵 Fundo preto */
+            height: 70px;
+        }
+
+        .header img {
+            width: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 18px;
+            color: white; /* Texto branco */
+        }
+
+        .stars {
+            color: #f5a623;
+            font-size: 14px;
+        }
+
+        .logo-direita {
+        
+            width: auto;
+            margin-left: auto;
+            
+            
+        }
+
+        /* Caixa de comentário */
+        .comment-box {
+            padding: 30px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 12px;
+            resize: none;
+            font-size: 14px;
+            background: #f5f5f5;
+            font-family: inherit;
+            min-height: 150px; /* 🔴 Maior verticalmente */
+        }
+
+        .anonimo {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .btn-enviar {
+            background: #7c3aed;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-enviar:hover {
+            background: #4f0669;
+        }
+
+        /* Lista de comentários */
+        .comment-list {
+            flex: 1;
+            padding: 10px;
+            background: #fafafa;
+        }
+
+        .comment {
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-header img {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .comment-header strong {
+            font-size: 14px;
+        }
+
+        .verified {
+            font-size: 12px;
+            color: #3b82f6;
+            margin-left: 4px;
+        }
+
+        .comment p {
+            font-size: 13px;
+            margin: 4px 0 0;
+        }
+
+        .comment .stars {
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        /* ==================== RESPONSIVO ==================== */
+        @media (max-width: 480px) {
+            .container {
+                max-width: 420px;
+                margin: auto;
+                border: 1px solid #ccc;
+            }
+        }
+
+        /* Ajuste de scroll */
+        body {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+        <div id="sidebar_content">
+            <div id="user">
+                <img src="JADER.png" id="user_avatar" alt="Avatar">
+                <p id="user_infos">
+                    <span class="item-description">Jáder Abreu</span>
+                    <span class="item-description">Marketing, Programmer</span>
+                </p>
+            </div>
+
+      <ul id="side_items">
+                <li class="side-item active">
+                    <a href="#"><i class="fa-solid fa-house"></i><span class="item-description">Início</span></a>
+                </li>
+                <li class="side-item">
+                    <a href="#"><i class="fa-solid fa-search"></i><span class="item-description">Buscar</span></a>
+                </li>
+                <li class="side-item">
+                    <a href="#"><i class="fa-solid fa-clock"></i><span class="item-description">Histórico</span></a>
+                </li>
+                <li class="side-item">
+                    <a href="#"><i class="fa-solid fa-box"></i><span class="item-description">Ajuda</span></a>
+                </li>
+                <li class="side-item">
+                    <a href="planilhas.html"><i class="fa-solid fa-archive"></i><span class="item-description">Planilhas</span></a>
+                </li>
+                <li class="side-item">
+                    <a href="#"><i class="fa-solid fa-chart-line"></i><span class="item-description">Gráficos de Satisfação</span></a>
+                </li>
+              <li class="side-item">
+        <a href="sugestion2.html"><i class="fa-solid fa-message"></i><span class="item-description">Análise de Sentimentos</span></a>
+      </li>
+       <li class="side-item">
+        <a href="oversight.html"><i class="fa-solid fa-check"></i><span class="item-description">Acompanhamento de Ações</span></a>
+      </li>
+            </ul>
+  </div>
+
+            <button id="open_btn">
+                <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div id="logout">
+            <button id="logout_btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="item-description">Logout</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- CONTEÚDO: TELA DE FEEDBACK -->
+    <main id="content">
+        <div class="container">
+
+            <!-- Cabeçalho -->
+            <div class="header">
+                <img src="https://logospng.org/download/mercado-livre/logo-mercado-livre-2048.png" alt="Logo App">
+                <div>
+                    <h2>Mercado Livre</h2>
+                    <div class="stars">★★★★★</div>
+                </div>
+                <!-- Logo no canto direito -->
+                <img class="logo-direita" src="ECHO LOGO sem nome (1).png" alt="Minha Logo" width="50px">
+            </div>
+
+            <!-- Caixa de comentário -->
+            <div class="comment-box">
+                <textarea placeholder="Digite..."></textarea>
+                <label class="anonimo">
+                    <input type="checkbox"> Anônimo
+                </label>
+                <button class="btn-enviar">Enviar</button>
+            </div>
+
+            <!-- Lista de comentários -->
+            <div class="comment-list">
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="KAUAN.png" alt="avatar">
+                        <strong>Kauan Batista</strong>
+                        <span class="verified">✔</span>
+                        <div class="stars">★★★★☆</div>
+                    </div>
+                    <p>Excelente app, muito fácil de usar e entrega rápida!</p>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="USER.jpeg" alt="avatar">
+                        <strong>Anônimo</strong>
+                        <div class="stars">★★★☆☆</div>
+                    </div>
+                    <p>Poderia melhorar a velocidade no carregamento das páginas.</p>
+                </div>
+
+                <div class="comment">
+                    <div class="comment-header">
+                        <img src="USER.jpeg" alt="avatar">
+                        <strong>Anônimo</strong>
+                        <div class="stars">★★★☆☆</div>
+                    </div>
+                    <p>Muito bom, e apesar de as vezes o pedido demorar e o app não informar, sempre chega sem defeitos.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script da sidebar -->
+    <script>
+        document.getElementById('open_btn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('open-sidebar');
+        });
+    </script>
+</body>
+</html>
