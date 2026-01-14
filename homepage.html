@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Echo - Sua voz importa</title>
+  <!-- Fonte e ícones -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- Estilo principal (seu + integrado) -->
+  <link rel="stylesheet" href="homepage.css" />
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div id="sidebar_content">
+      <!-- Perfil do usuário -->
+      <div id="user">
+        <img src="JADER.png" id="user_avatar" alt="Avatar">
+        <p id="user_infos">
+          <span class="item-description">Jáder Abreu</span>
+          <span class="item-description">Marketing, Programmer</span>
+        </p>
+      </div>
+
+      <!-- Menu de navegação -->
+      <ul id="side_items">
+      <li class="side-item active">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i><span class="item-description">Início</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-search"></i><span class="item-description">Buscar</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-clock"></i><span class="item-description">Histórico</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-circle-question"></i><span class="item-description">Ajuda</span></a>
+      </li>
+      <li class="side-item">
+        <a href="planilhas.html"><i class="fa-solid fa-file-archive"></i><span class="item-description">Planilhas</span></a>
+      </li>
+      <li class="side-item">
+        <a href="grafics.html"><i class="fa-solid fa-chart-line"></i><span class="item-description">Gráficos de Satisfação</span></a>
+      </li>
+      <li class="side-item">
+        <a href="sugestion2.html"><i class="fa-solid fa-message"></i><span class="item-description">Análise de Sentimentos</span></a>
+      </li>
+      <li class="side-item">
+        <a href="oversight.html"><i class="fa-solid fa-check"></i><span class="item-description">Acompanhamento de Ações</span></a>
+      </li>
+    </ul>
+  </div>
+
+      <!-- Botão de expandir/recolher -->
+      <button id="open_btn">
+        <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Logout -->
+    <div id="logout">
+      <button id="logout_btn">
+        <i class="fa-solid fa-right-from-bracket"></i>
+        <span class="item-description">Logout</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Header -->
+    <header class="main-header">
+  
+      <nav class="nav">
+        <a href="homepage.html">Início</a>
+        <a href="#">Sobre</a>
+        <a href="#">Termos de uso</a>
+      </nav>
+    </header>
+
+    <!-- Conteúdo principal -->
+   <div class="logo-container">
+  <img src="ECHO LOGO PRETA.png" alt="Logo ECHO" width="100">
+</div>
+
+<div class="search-bar">
+  <input type="text" placeholder="O que você procura?" />
+  <button><i class="fas fa-times"></i></button>
+</div>
+
+    <!-- Carrossel de marcas -->
+   <div class="carousel-container">
+    <div class="carousel">
+        <div class="slide">
+            <a href="avaliar.html">
+                <img src="MERCADO LIVRE.png" alt="Mercado Livre">
+            </a>
+        </div>
+        <div class="slide">
+            <img src="AMAZON LOGO.png" alt="Amazon">
+        </div>
+        <div class="slide">
+            <img src="ADIDAS LOGO.png" alt="Adidas">
+        </div>
+    </div>
+</div>
+
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide">
+            <img src="AMAZON LOGO.png" alt="Amazon">
+        </div>
+        <div class="slide">
+            <img src="ADIDAS LOGO.png" alt="Adidas">
+        </div>
+        <div class="slide">
+            <a href="avaliar.html">
+                <img src="MERCADO LIVRE.png" alt="Mercado Livre">
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="carousel-container">
+    <div class="carousel">
+        <div class="slide">
+            <img src="ADIDAS LOGO.png" alt="Adidas">
+        </div>
+        <div class="slide">
+            <a href="avaliar.html">
+                <img src="MERCADO LIVRE.png" alt="Mercado Livre">
+            </a>
+        </div>
+        <div class="slide">
+            <img src="AMAZON LOGO.png" alt="Amazon">
+        </div>
+    </div>
+</div>
+
+  <!-- Script do sidebar -->
+  <script src="script3.js"></script>
+</body>
+</html>
