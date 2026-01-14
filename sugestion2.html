@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECHO - Análise de Sentimentos</title>
+  <!-- Fonte moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Ícones Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* --- Reset e base --- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8f9fa;
+      color: #111;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* --- SIDEBAR MODERNA --- */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 82px;
+      height: 100vh;
+      background-color: #ffffff;
+      border-radius: 0 18px 18px 0;
+      z-index: 1000;
+      transition: all 0.5s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.08);
+    }
+
+    #sidebar.open-sidebar {
+      width: 15%;
+      min-width: 200px;
+    }
+
+    #sidebar_content {
+      padding: 12px;
+    }
+
+    #user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      padding: 0 12px;
+    }
+
+    #user_avatar {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 20px;
+      background-color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #555;
+    }
+
+    #user_infos {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #user_infos span:last-child {
+      color: #6b6b6b;
+      font-size: 12px;
+    }
+
+    #side_items {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 6px;
+    }
+
+    .side-item {
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+    }
+
+    .side-item.active {
+      background-color: #010101;
+    }
+
+    .side-item:hover:not(.active),
+    #logout_btn:hover {
+      background-color: #e3e9f7;
+    }
+
+    .side-item a {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a0a0a;
+    }
+
+    .side-item.active a {
+      color: #e3e9f7;
+    }
+
+    .side-item a i {
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .item-description {
+      width: 0;
+      opacity: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 14px;
+      transition: all 0.4s ease;
+    }
+
+    #sidebar.open-sidebar .item-description {
+      width: 150px;
+      opacity: 1;
+    }
+
+    #sidebar.open-sidebar .side-item a {
+      justify-content: flex-start;
+      gap: 14px;
+    }
+
+    #logout {
+      border-top: 1px solid #e3e9f7;
+      padding: 12px;
+    }
+
+    #logout_btn {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 12px;
+      font-size: 14px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      color: #0a0a0a;
+    }
+
+    #open_btn {
+      position: absolute;
+      top: 30px;
+      right: -10px;
+      background-color: #363636;
+      color: #e3e9f7;
+      border: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #open_btn_icon {
+      transition: transform 0.3s ease;
+    }
+
+    #sidebar.open-sidebar #open_btn_icon {
+      transform: rotate(180deg);
+    }
+
+    /* --- CONTEÚDO PRINCIPAL --- */
+    #content {
+      margin-left: 82px;
+      width: calc(100% - 82px);
+      min-height: 100vh;
+      transition: all 0.5s ease;
+      display: flex;
+      flex-direction: column;
+      background: #f9f9f9;
+    }
+
+    #sidebar.open-sidebar ~ #content {
+      margin-left: 15%;
+      width: calc(100% - 15%);
+    }
+
+    /* --- HEADER AJUSTADO --- */
+    header {
+      background: linear-gradient(135deg, #000000, #000000);
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 0.8rem 1.2rem;
+      min-height: 60px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    header img {
+      height: 60px;
+      margin-left: auto; /* Alinha à direita */
+    }
+
+    .container {
+      padding: 1.5rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-top: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0px 2px 8px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .sentimento {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .sentimento .info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .sentimento span {
+      font-weight: 600;
+      min-width: 80px;
+    }
+    .progress-bar {
+      flex: 1;
+      height: 12px;
+      border-radius: 8px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin: 0 10px;
+    }
+    .progress {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 1s ease;
+    }
+    .positivo { background: linear-gradient(90deg, #22c55e, #16a34a); }
+    .neutro   { background: linear-gradient(90deg, #facc15, #eab308); }
+    .negativo { background: linear-gradient(90deg, #ef4444, #b91c1c); }
+
+    .insight {
+      background: #fffbea;
+      border-left: 4px solid #facc15;
+      padding: 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: #333;
+      margin-top: 1rem;
+    }
+    .insight-icon {
+      color: #facc15;
+      font-size: 1.4rem;
+    }
+
+    .filtros {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .select-wrapper {
+      position: relative;
+      flex: 1;
+    }
+    .select-wrapper select {
+      width: 100%;
+      padding: 0.6rem 2.5rem 0.6rem 0.8rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 0.95rem;
+      background: #fff;
+      appearance: none;
+      cursor: pointer;
+      transition: border 0.2s, box-shadow 0.2s;
+    }
+    .select-wrapper select:hover {
+      border-color: #000000;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    .select-wrapper select:focus {
+      outline: none;
+      border-color: #000000;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+    }
+    .select-wrapper::after {
+      content: "▼";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      transition: transform 0.3s ease;
+      pointer-events: none;
+      color: #000000;
+      font-size: 0.8rem;
+    }
+    .select-wrapper.aberto::after {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      #sidebar {
+        left: -100%;
+      }
+      #sidebar.open-sidebar {
+        left: 0;
+        width: 260px;
+        min-width: 260px;
+      }
+      #content {
+        margin-left: 0;
+        width: 100%;
+      }
+      #sidebar.open-sidebar ~ #content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+ <!-- Sidebar Moderna -->
+<div id="sidebar">
+  <div id="sidebar_content">
+    <!-- Usuário -->
+    <div id="user">
+      <img src="JADER.png" id="user_avatar" alt="Avatar">
+      <p id="user_infos">
+        <span class="item-description">Jáder Abreu</span>
+        <span class="item-description">Marketing, Programmer</span>
+      </p>
+    </div>
+
+    <!-- Itens de navegação -->
+    <ul id="side_items">
+      <li class="side-item">
+        <a href="homepage.html"><i class="fa-solid fa-house"></i><span class="item-description">Início</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-search"></i><span class="item-description">Buscar</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-clock"></i><span class="item-description">Histórico</span></a>
+      </li>
+      <li class="side-item">
+        <a href="#"><i class="fa-solid fa-circle-question"></i><span class="item-description">Ajuda</span></a>
+      </li>
+      <li class="side-item">
+        <a href="planilhas.html"><i class="fa-solid fa-file-archive"></i><span class="item-description">Planilhas</span></a>
+      </li>
+      <li class="side-item">
+        <a href="grafics.html"><i class="fa-solid fa-chart-line"></i><span class="item-description">Gráficos de Satisfação</span></a>
+      </li>
+      <li class="side-item active">
+        <a href="sugestion2.html"><i class="fa-solid fa-message"></i><span class="item-description">Análise de Sentimentos</span></a>
+      </li>
+      <li class="side-item">
+        <a href="oversight.html"><i class="fa-solid fa-check"></i><span class="item-description">Acompanhamento de Ações</span></a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Logout -->
+  <div id="logout">
+    <button id="logout_btn">
+      <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      <span class="item-description">Sair</span>
+    </button>
+  </div>
+
+  <!-- Botão de abrir/fechar -->
+  <button id="open_btn">
+    <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
+  </button>
+</div>
+
+  <!-- Conteúdo Principal -->
+  <div id="content">
+    <!-- HEADER AJUSTADO: LOGO NO CANTO DIREITO -->
+    <header>
+      <img src="ECHO LOGO BRANCA.png" alt="Logo ECHO">
+    </header>
+
+    <!-- Conteúdo da análise -->
+    <div class="container">
+      <h2>Análise de Sentimentos</h2>
+
+      <div class="card">
+        <h3>Mapa de Sentimentos – Últimos 30 dias</h3>
+
+        <div class="sentimento">
+          <div class="info">
+            😀 <span>Positivos</span>
+            <div class="progress-bar">
+              <div class="progress positivo" style="width: 65%;"></div>
+            </div>
+          </div>
+          <strong>65%</strong>
+        </div>
+
+        <div class="sentimento">
+          <div class="info">
+            😐 <span>Neutros</span>
+            <div class="progress-bar">
+              <div class="progress neutro" style="width: 25%;"></div>
+            </div>
+          </div>
+          <strong>25%</strong>
+        </div>
+
+        <div class="sentimento">
+          <div class="info">
+            😡 <span>Negativos</span>
+            <div class="progress-bar">
+              <div class="progress negativo" style="width: 10%;"></div>
+            </div>
+          </div>
+          <strong>10%</strong>
+        </div>
+
+        <div class="insight">
+          <div class="insight-icon">💡</div>
+          <p><strong>Insight da IA:</strong> A satisfação aumentou 12% após a última atualização.</p>
+        </div>
+      </div>
+
+      <div class="filtros">
+        <div class="select-wrapper">
+          <select onfocus="abrir(this)" onblur="fechar(this)">
+            <option>Período</option>
+            <option>Últimos 7 dias</option>
+            <option>Últimos 30 dias</option>
+            <option>Últimos 3 meses</option>
+          </select>
+        </div>
+
+        <div class="select-wrapper">
+          <select onfocus="abrir(this)" onblur="fechar(this)">
+            <option>Categoria</option>
+            <option>Elogios</option>
+            <option>Reclamações</option>
+            <option>Sugestões</option>
+            <option>Ideias Criativas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Controle dos selects
+    function abrir(el) {
+      el.parentElement.classList.add("aberto");
+    }
+    function fechar(el) {
+      el.parentElement.classList.remove("aberto");
+    }
+
+    // Controle da sidebar
+    const sidebar = document.getElementById('sidebar');
+    const openBtn = document.getElementById('open_btn');
+
+    openBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open-sidebar');
+    });
+
+    // Em mobile, clicar fora fecha
+    document.getElementById('content').addEventListener('click', () => {
+      if (window.innerWidth <= 768 && sidebar.classList.contains('open-sidebar')) {
+        sidebar.classList.remove('open-sidebar');
+      }
+    });
+  </script>
+
+</body>
+</html>
